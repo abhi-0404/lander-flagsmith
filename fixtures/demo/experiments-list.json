@@ -1,0 +1,227 @@
+{
+  "count": 5,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "feature": {
+        "id": 1,
+        "name": "checkout_cta",
+        "type": "MULTIVARIATE",
+        "initial_value": "copy-invite",
+        "multivariate_options": [
+          {
+            "id": 11,
+            "uuid": "00000000-0000-4000-8000-000000000011",
+            "type": "unicode",
+            "integer_value": null,
+            "string_value": "get-everyones-times",
+            "boolean_value": null,
+            "default_percentage_allocation": 0,
+            "key": "get-everyones-times"
+          }
+        ]
+      },
+      "name": "checkout_cta_test",
+      "hypothesis": "Synthetic demo: checkout_cta",
+      "status": "running",
+      "metrics": [
+        {
+          "id": 1,
+          "metric": 1,
+          "metric_name": "checkout_completed",
+          "aggregation": "occurrence",
+          "direction": "up",
+          "expected_direction": "increase",
+          "created_at": "2026-11-24T08:00:00.000000Z"
+        }
+      ],
+      "created_at": "2026-11-24T08:00:00.000000Z",
+      "updated_at": "2026-11-24T08:05:00.000000Z",
+      "started_at": "2026-11-24T08:05:00.000000Z",
+      "ended_at": null,
+      "rollout_decision": null,
+      "rollout_variant": null
+    },
+    {
+      "id": 2,
+      "feature": {
+        "id": 2,
+        "name": "pricing_banner",
+        "type": "MULTIVARIATE",
+        "initial_value": "no-banner",
+        "multivariate_options": [
+          {
+            "id": 21,
+            "uuid": "00000000-0000-4000-8000-000000000021",
+            "type": "unicode",
+            "integer_value": null,
+            "string_value": "savings-banner",
+            "boolean_value": null,
+            "default_percentage_allocation": 0,
+            "key": "savings-banner"
+          }
+        ]
+      },
+      "name": "pricing_banner_test",
+      "hypothesis": "Synthetic demo: pricing_banner",
+      "status": "running",
+      "metrics": [
+        {
+          "id": 1,
+          "metric": 1,
+          "metric_name": "checkout_completed",
+          "aggregation": "occurrence",
+          "direction": "up",
+          "expected_direction": "increase",
+          "created_at": "2026-11-24T08:00:00.000000Z"
+        }
+      ],
+      "created_at": "2026-11-24T08:00:00.000000Z",
+      "updated_at": "2026-11-24T08:05:00.000000Z",
+      "started_at": "2026-11-24T08:05:00.000000Z",
+      "ended_at": null,
+      "rollout_decision": null,
+      "rollout_variant": null
+    },
+    {
+      "id": 3,
+      "feature": {
+        "id": 3,
+        "name": "signup_steps",
+        "type": "MULTIVARIATE",
+        "initial_value": "three-step",
+        "multivariate_options": [
+          {
+            "id": 31,
+            "uuid": "00000000-0000-4000-8000-000000000031",
+            "type": "unicode",
+            "integer_value": null,
+            "string_value": "one-step",
+            "boolean_value": null,
+            "default_percentage_allocation": 0,
+            "key": "one-step"
+          }
+        ]
+      },
+      "name": "signup_steps_test",
+      "hypothesis": "Synthetic demo: signup_steps",
+      "status": "running",
+      "metrics": [
+        {
+          "id": 1,
+          "metric": 1,
+          "metric_name": "checkout_completed",
+          "aggregation": "occurrence",
+          "direction": "up",
+          "expected_direction": "increase",
+          "created_at": "2026-11-24T08:00:00.000000Z"
+        }
+      ],
+      "created_at": "2026-11-24T08:00:00.000000Z",
+      "updated_at": "2026-11-24T08:05:00.000000Z",
+      "started_at": "2026-11-24T08:05:00.000000Z",
+      "ended_at": null,
+      "rollout_decision": null,
+      "rollout_variant": null
+    },
+    {
+      "id": 4,
+      "feature": {
+        "id": 4,
+        "name": "onboarding_tips",
+        "type": "MULTIVARIATE",
+        "initial_value": "no-tips",
+        "multivariate_options": [
+          {
+            "id": 41,
+            "uuid": "00000000-0000-4000-8000-000000000041",
+            "type": "unicode",
+            "integer_value": null,
+            "string_value": "inline-tips",
+            "boolean_value": null,
+            "default_percentage_allocation": 0,
+            "key": "inline-tips"
+          }
+        ]
+      },
+      "name": "onboarding_tips_test",
+      "hypothesis": "Synthetic demo: onboarding_tips",
+      "status": "running",
+      "metrics": [
+        {
+          "id": 1,
+          "metric": 1,
+          "metric_name": "checkout_completed",
+          "aggregation": "occurrence",
+          "direction": "up",
+          "expected_direction": "increase",
+          "created_at": "2026-11-24T08:00:00.000000Z"
+        }
+      ],
+      "created_at": "2026-11-24T08:00:00.000000Z",
+      "updated_at": "2026-11-24T08:05:00.000000Z",
+      "started_at": "2026-11-24T08:05:00.000000Z",
+      "ended_at": null,
+      "rollout_decision": null,
+      "rollout_variant": null
+    },
+    {
+      "id": 5,
+      "feature": {
+        "id": 5,
+        "name": "search_ranking",
+        "type": "MULTIVARIATE",
+        "initial_value": "classic",
+        "multivariate_options": [
+          {
+            "id": 51,
+            "uuid": "00000000-0000-4000-8000-000000000051",
+            "type": "unicode",
+            "integer_value": null,
+            "string_value": "semantic",
+            "boolean_value": null,
+            "default_percentage_allocation": 0,
+            "key": "semantic"
+          }
+        ]
+      },
+      "name": "search_ranking_test",
+      "hypothesis": "Synthetic demo: search_ranking",
+      "status": "running",
+      "metrics": [
+        {
+          "id": 1,
+          "metric": 1,
+          "metric_name": "checkout_completed",
+          "aggregation": "occurrence",
+          "direction": "up",
+          "expected_direction": "increase",
+          "created_at": "2026-11-24T08:00:00.000000Z"
+        },
+        {
+          "id": 2,
+          "metric": 2,
+          "metric_name": "refund_requested",
+          "aggregation": "occurrence",
+          "direction": "down",
+          "expected_direction": "decrease",
+          "created_at": "2026-11-24T08:00:00.000000Z"
+        }
+      ],
+      "created_at": "2026-11-24T08:00:00.000000Z",
+      "updated_at": "2026-11-24T08:05:00.000000Z",
+      "started_at": "2026-11-24T08:05:00.000000Z",
+      "ended_at": null,
+      "rollout_decision": null,
+      "rollout_variant": null
+    }
+  ],
+  "status_counts": {
+    "created": 0,
+    "running": 5,
+    "paused": 0,
+    "completed": 0
+  }
+}

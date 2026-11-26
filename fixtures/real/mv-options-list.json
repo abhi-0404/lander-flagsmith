@@ -1,0 +1,29 @@
+{
+  "count": 2,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "uuid": "3b66092b-504c-465b-a5a7-1fc2200771e9",
+      "type": "unicode",
+      "integer_value": null,
+      "string_value": "variant_a",
+      "boolean_value": null,
+      "default_percentage_allocation": 0,
+      "key": "variant_a",
+      "feature": 1
+    },
+    {
+      "id": 2,
+      "uuid": "19c3b2b7-f5f6-4967-b671-f6bb30ed9a44",
+      "type": "unicode",
+      "integer_value": null,
+      "string_value": "variant_b",
+      "boolean_value": null,
+      "default_percentage_allocation": 0,
+      "key": "variant_b",
+      "feature": 1
+    }
+  ]
+}

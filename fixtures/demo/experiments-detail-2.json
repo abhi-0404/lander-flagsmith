@@ -1,0 +1,59 @@
+{
+  "id": 2,
+  "feature": {
+    "id": 2,
+    "name": "pricing_banner",
+    "type": "MULTIVARIATE",
+    "initial_value": "no-banner",
+    "multivariate_options": [
+      {
+        "id": 21,
+        "uuid": "00000000-0000-4000-8000-000000000021",
+        "type": "unicode",
+        "integer_value": null,
+        "string_value": "savings-banner",
+        "boolean_value": null,
+        "default_percentage_allocation": 0,
+        "key": "savings-banner"
+      }
+    ]
+  },
+  "name": "pricing_banner_test",
+  "hypothesis": "Synthetic demo: pricing_banner",
+  "status": "running",
+  "metrics": [
+    {
+      "id": 1,
+      "metric": 1,
+      "metric_name": "checkout_completed",
+      "aggregation": "occurrence",
+      "direction": "up",
+      "expected_direction": "increase",
+      "created_at": "2026-11-24T08:00:00.000000Z"
+    }
+  ],
+  "created_at": "2026-11-24T08:00:00.000000Z",
+  "updated_at": "2026-11-24T08:05:00.000000Z",
+  "started_at": "2026-11-24T08:05:00.000000Z",
+  "ended_at": null,
+  "rollout_decision": null,
+  "rollout_variant": null,
+  "experiment_rollout": {
+    "enabled": true,
+    "rollout_percentage": 100,
+    "feature_state_value": {
+      "type": "string",
+      "value": "no-banner"
+    },
+    "multivariate_feature_state_values": [
+      {
+        "multivariate_feature_option": 21,
+        "percentage_allocation": 50
+      }
+    ],
+    "audience": {
+      "match": "any",
+      "segments": []
+    }
+  }
+}

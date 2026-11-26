@@ -1,0 +1,59 @@
+{
+  "id": 4,
+  "feature": {
+    "id": 4,
+    "name": "onboarding_tips",
+    "type": "MULTIVARIATE",
+    "initial_value": "no-tips",
+    "multivariate_options": [
+      {
+        "id": 41,
+        "uuid": "00000000-0000-4000-8000-000000000041",
+        "type": "unicode",
+        "integer_value": null,
+        "string_value": "inline-tips",
+        "boolean_value": null,
+        "default_percentage_allocation": 0,
+        "key": "inline-tips"
+      }
+    ]
+  },
+  "name": "onboarding_tips_test",
+  "hypothesis": "Synthetic demo: onboarding_tips",
+  "status": "running",
+  "metrics": [
+    {
+      "id": 1,
+      "metric": 1,
+      "metric_name": "checkout_completed",
+      "aggregation": "occurrence",
+      "direction": "up",
+      "expected_direction": "increase",
+      "created_at": "2026-11-24T08:00:00.000000Z"
+    }
+  ],
+  "created_at": "2026-11-24T08:00:00.000000Z",
+  "updated_at": "2026-11-24T08:05:00.000000Z",
+  "started_at": "2026-11-24T08:05:00.000000Z",
+  "ended_at": null,
+  "rollout_decision": null,
+  "rollout_variant": null,
+  "experiment_rollout": {
+    "enabled": true,
+    "rollout_percentage": 100,
+    "feature_state_value": {
+      "type": "string",
+      "value": "no-tips"
+    },
+    "multivariate_feature_state_values": [
+      {
+        "multivariate_feature_option": 41,
+        "percentage_allocation": 50
+      }
+    ],
+    "audience": {
+      "match": "any",
+      "segments": []
+    }
+  }
+}

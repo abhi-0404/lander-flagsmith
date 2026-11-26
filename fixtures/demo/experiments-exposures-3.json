@@ -1,0 +1,37 @@
+{
+  "exposures": {
+    "as_of": "2026-11-26T09:00:00.000000Z",
+    "last_error_at": null,
+    "refresh_requested_at": "2026-11-26T09:00:00.000000Z",
+    "payload": {
+      "timeseries": {
+        "granularity": "hour",
+        "points": [
+          {
+            "bucket": "2026-11-25T14:00:00+00:00",
+            "new_identities": {
+              "control": 305,
+              "one-step": 195
+            }
+          },
+          {
+            "bucket": "2026-11-25T15:00:00+00:00",
+            "new_identities": {
+              "control": 183,
+              "one-step": 117
+            }
+          },
+          {
+            "bucket": "2026-11-26T08:00:00+00:00",
+            "new_identities": {
+              "control": 122,
+              "one-step": 78
+            }
+          }
+        ]
+      },
+      "excluded_identities": 0
+    },
+    "is_final": false
+  }
+}

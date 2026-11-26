@@ -1,0 +1,12 @@
+{
+  "count": 0,
+  "next": null,
+  "previous": null,
+  "results": [],
+  "status_counts": {
+    "created": 0,
+    "running": 0,
+    "paused": 0,
+    "completed": 0
+  }
+}

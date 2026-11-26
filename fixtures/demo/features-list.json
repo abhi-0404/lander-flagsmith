@@ -1,0 +1,56 @@
+{
+  "count": 7,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "checkout_cta",
+      "type": "MULTIVARIATE",
+      "default_enabled": true,
+      "is_archived": false
+    },
+    {
+      "id": 2,
+      "name": "pricing_banner",
+      "type": "MULTIVARIATE",
+      "default_enabled": true,
+      "is_archived": false
+    },
+    {
+      "id": 3,
+      "name": "signup_steps",
+      "type": "MULTIVARIATE",
+      "default_enabled": true,
+      "is_archived": false
+    },
+    {
+      "id": 4,
+      "name": "onboarding_tips",
+      "type": "MULTIVARIATE",
+      "default_enabled": true,
+      "is_archived": false
+    },
+    {
+      "id": 5,
+      "name": "search_ranking",
+      "type": "MULTIVARIATE",
+      "default_enabled": true,
+      "is_archived": false
+    },
+    {
+      "id": 6,
+      "name": "maintenance_mode",
+      "type": "STANDARD",
+      "default_enabled": false,
+      "is_archived": false
+    },
+    {
+      "id": 7,
+      "name": "new_nav",
+      "type": "STANDARD",
+      "default_enabled": true,
+      "is_archived": false
+    }
+  ]
+}

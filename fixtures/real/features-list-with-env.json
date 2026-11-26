@@ -1,0 +1,62 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "name": "paypal_button",
+      "type": "MULTIVARIATE",
+      "default_enabled": true,
+      "initial_value": "control",
+      "created_date": "2026-11-25T14:42:21.154802Z",
+      "description": null,
+      "tags": [],
+      "multivariate_options": [
+        {
+          "id": 1,
+          "uuid": "3b66092b-504c-465b-a5a7-1fc2200771e9",
+          "type": "unicode",
+          "integer_value": null,
+          "string_value": "variant_a",
+          "boolean_value": null,
+          "default_percentage_allocation": 0,
+          "key": "variant_a"
+        },
+        {
+          "id": 2,
+          "uuid": "19c3b2b7-f5f6-4967-b671-f6bb30ed9a44",
+          "type": "unicode",
+          "integer_value": null,
+          "string_value": "variant_b",
+          "boolean_value": null,
+          "default_percentage_allocation": 0,
+          "key": "variant_b"
+        }
+      ],
+      "is_archived": false,
+      "owners": [],
+      "group_owners": [],
+      "uuid": "4bae8741-1902-417d-8ebb-26011e331707",
+      "project": 1,
+      "environment_feature_state": {
+        "id": 1,
+        "feature_state_value": "control",
+        "environment": 1,
+        "identity": null,
+        "feature_segment": null,
+        "enabled": true
+      },
+      "segment_feature_state": null,
+      "num_segment_overrides": 1,
+      "num_identity_overrides": null,
+      "is_num_identity_overrides_complete": true,
+      "is_server_key_only": false,
+      "last_modified_in_any_environment": null,
+      "last_modified_in_current_environment": null,
+      "metadata": [],
+      "code_references_counts": [],
+      "lifecycle_stage": "new"
+    }
+  ]
+}

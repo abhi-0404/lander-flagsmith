@@ -1,0 +1,5 @@
+packages:
+  - "."
+  - "tools/simulator"
+allowBuilds:
+  esbuild: true

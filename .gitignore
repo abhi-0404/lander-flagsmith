@@ -1,0 +1,5 @@
+.env
+.lander/
+dist/
+node_modules/
+*.tsbuildinfo

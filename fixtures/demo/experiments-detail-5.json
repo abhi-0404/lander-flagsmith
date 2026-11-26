@@ -1,0 +1,68 @@
+{
+  "id": 5,
+  "feature": {
+    "id": 5,
+    "name": "search_ranking",
+    "type": "MULTIVARIATE",
+    "initial_value": "classic",
+    "multivariate_options": [
+      {
+        "id": 51,
+        "uuid": "00000000-0000-4000-8000-000000000051",
+        "type": "unicode",
+        "integer_value": null,
+        "string_value": "semantic",
+        "boolean_value": null,
+        "default_percentage_allocation": 0,
+        "key": "semantic"
+      }
+    ]
+  },
+  "name": "search_ranking_test",
+  "hypothesis": "Synthetic demo: search_ranking",
+  "status": "running",
+  "metrics": [
+    {
+      "id": 1,
+      "metric": 1,
+      "metric_name": "checkout_completed",
+      "aggregation": "occurrence",
+      "direction": "up",
+      "expected_direction": "increase",
+      "created_at": "2026-11-24T08:00:00.000000Z"
+    },
+    {
+      "id": 2,
+      "metric": 2,
+      "metric_name": "refund_requested",
+      "aggregation": "occurrence",
+      "direction": "down",
+      "expected_direction": "decrease",
+      "created_at": "2026-11-24T08:00:00.000000Z"
+    }
+  ],
+  "created_at": "2026-11-24T08:00:00.000000Z",
+  "updated_at": "2026-11-24T08:05:00.000000Z",
+  "started_at": "2026-11-24T08:05:00.000000Z",
+  "ended_at": null,
+  "rollout_decision": null,
+  "rollout_variant": null,
+  "experiment_rollout": {
+    "enabled": true,
+    "rollout_percentage": 100,
+    "feature_state_value": {
+      "type": "string",
+      "value": "classic"
+    },
+    "multivariate_feature_state_values": [
+      {
+        "multivariate_feature_option": 51,
+        "percentage_allocation": 50
+      }
+    ],
+    "audience": {
+      "match": "any",
+      "segments": []
+    }
+  }
+}
