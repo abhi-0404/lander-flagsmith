@@ -231,3 +231,13 @@ Self-hosted Flagsmith 2.295.2 from `../flagscope/stack`, keys in `.env.local-sta
      its prompt text: CLI error output is now masked (`maskOutput`).
 - Note: the hash prefix for `rollback` is the apply journal id (9a6c980b here), not the plan id. Worth a clearer prompt in the demo.
 - Experiment 11 on the local stack is now completed; `pnpm seed --reset --env staging` then `pnpm seed --env staging` recreates it.
+
+## Docs (2026-11-26, late evening)
+
+- `README.md` written (judge-facing): positioning line, scan output, commands, verdict rules, human-control gates, codemod,
+  Flagsmith surfaces table (CLI + Admin API + Node SDK; MCP is NOT used and the README does not claim it), comparison table,
+  quick start, tested-against, limits. No time-saved number yet: measure one manual landing first.
+- `docs/demo-script.md`: 2:30 shot list against the local Track 3 stack, prep checklist (reset, reseed, simulate, clean demo shop,
+  rehearse the PR step), fallback take on fixtures, optional drift-check shot.
+- Uncommitted. Still left for Track 2: rehearse the live code stage against GitHub (push + `gh pr create` never run for real),
+  measure time saved, architecture diagram, record the video (Nov 29).
