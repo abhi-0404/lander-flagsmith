@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { FlagsmithAdapter, type ApiCall } from "../src/flagsmith/adapter.js";
 import { fixtureTransport } from "../src/flagsmith/fixtureTransport.js";
 import { parseThrottleSeconds, REFRESH_MIN_INTERVAL_MS, RefreshThrottle } from "../src/flagsmith/refreshThrottle.js";
-import { experimentSchema } from "../src/flagsmith/schemas.js";
+import { experimentSchema, metricResultSchema } from "../src/flagsmith/schemas.js";
 import { FIXTURES, readJson } from "./helpers.js";
 
 const REAL = join(FIXTURES, "real");
@@ -231,5 +231,17 @@ describe("refresh throttle behavior", () => {
 describe("fixture transport", () => {
   it("is read only", async () => {
     await expect(fixtureTransport(REAL)("DELETE", `api/v1/environments/${ENV}/experiments/1/`)).rejects.toThrow(/read only/);
+  });
+});
+
+describe("results with a null inference (seen live on self-hosted 2.295.2)", () => {
+  it("keeps the arm as a variant with no numbers instead of failing the scan", () => {
+    const m = metricResultSchema.parse({
+      metric_id: 1,
+      variants: { control: { n: 10, sum: 1 }, "one-step": { n: 9, sum: 2 } },
+      inference: { "one-step": null },
+    });
+    expect(m.inference["one-step"]).toEqual({});
+    expect("control" in m.inference).toBe(false);
   });
 });

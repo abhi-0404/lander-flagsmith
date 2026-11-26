@@ -102,8 +102,12 @@ export const metricResultSchema = z.looseObject({
     z.string(),
     z.looseObject({ n: z.number(), sum: z.number(), sum_squares: z.number().optional() }),
   ),
-  /** Control has no entry. Absent until enough data. */
-  inference: z.record(z.string(), variantInferenceSchema).default({}),
+  /**
+   * Control has no entry. Absent until enough data. A variant with too little data can also come back as `null`
+   * (seen live on self-hosted 2.295.2): that becomes `{}`, so the arm stays a variant (not mistaken for control by
+   * "no inference entry") with no numbers yet.
+   */
+  inference: z.record(z.string(), z.preprocess((v) => (v === null ? {} : v), variantInferenceSchema)).default({}),
   conversions_timeseries: timeseriesSchema.optional(),
 });
 export type MetricResult = z.infer<typeof metricResultSchema>;
