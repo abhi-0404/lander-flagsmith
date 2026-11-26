@@ -48,17 +48,22 @@ export function maskArgs(args: string[]): string[] {
  * Flagsmith Cloud (the default URL) keeps plain FLAGSMITH_API_KEY. Pure: takes the env, returns the extra variables.
  */
 export function credentialEnv(env: Record<string, string | undefined>): Record<string, string> {
+  const out: Record<string, string> = {};
+  // Project-scoped subcommands (`flag get`, `flag update`) fail with "no project" unless the CLI gets one; it reads
+  // FLAGSMITH_PROJECT, while Lander's config names it FLAGSMITH_PROJECT_ID (seen live on flagsmith v2.0.0).
+  const project = env["FLAGSMITH_PROJECT_ID"];
+  if (project && !env["FLAGSMITH_PROJECT"]) out["FLAGSMITH_PROJECT"] = project;
   const url = env["FLAGSMITH_API_URL"];
   const key = env["FLAGSMITH_API_KEY"];
-  if (!url || !key) return {};
+  if (!url || !key) return out;
   let host: string;
   try {
     host = new URL(url).host;
   } catch {
-    return {};
+    return out;
   }
-  if (host === "api.flagsmith.com") return {};
-  return { [`FLAGSMITH_API_KEY_${host.replace(/[^A-Za-z0-9]/g, "_")}`]: key };
+  if (host !== "api.flagsmith.com") out[`FLAGSMITH_API_KEY_${host.replace(/[^A-Za-z0-9]/g, "_")}`] = key;
+  return out;
 }
 
 /**
