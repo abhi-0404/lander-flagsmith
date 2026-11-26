@@ -1,5 +1,5 @@
-import { existsSync } from "node:fs";
 import { z } from "zod";
+import { loadEnvFiles } from "./envFiles.js";
 
 /** Environment variables Lander reads. See .env.example for the documented list. */
 export const envSchema = z.object({
@@ -49,9 +49,9 @@ export function parseConfig(env: Record<string, string | undefined>): LanderConf
   return result.data;
 }
 
-/** Load .env (if present) with Node's built-in loader, then validate process.env. */
+/** Load .env (plus any file named by LANDER_ENV_FILE, see envFiles.ts), then validate process.env. */
 export function loadConfig(envFile = ".env"): LanderConfig {
-  if (existsSync(envFile)) process.loadEnvFile(envFile);
+  loadEnvFiles([envFile]);
   return parseConfig(process.env);
 }
 

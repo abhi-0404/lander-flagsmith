@@ -23,8 +23,8 @@
  * The SDK stamps events with Date.now() when it buffers them, so this script
  * temporarily overrides Date.now() to place events inside the 2 day window.
  */
-import { existsSync } from "node:fs";
 import { parseArgs } from "node:util";
+import { loadEnvFiles } from "../../src/envFiles.js";
 import { Flagsmith } from "@flagsmith/nodejs";
 import { EXPERIMENT_FLAGS, METRIC, parseEnvName, type DemoExperimentFlag } from "../demoFlags.js";
 import { DEFAULT_SEED, decide, planTraffic, type PlannedIdentity } from "./plan.js";
@@ -34,6 +34,7 @@ const { values } = parseArgs({
     env: { type: "string" },
     seed: { type: "string", default: String(DEFAULT_SEED) },
     scale: { type: "string", default: "1" },
+    "span-hours": { type: "string", default: "48" },
     "dry-run": { type: "boolean", default: false },
     "api-url": { type: "string" },
     "events-url": { type: "string" },
@@ -51,25 +52,27 @@ if (!Number.isFinite(seed) || !Number.isFinite(scale) || scale <= 0) {
   process.exit(1);
 }
 
-for (const file of [".env", "../../.env"]) {
-  if (existsSync(file)) {
-    process.loadEnvFile(file);
-    break;
-  }
-}
+// `pnpm simulate` runs this package from tools/simulator; INIT_CWD is where the user typed the command (project root).
+if (process.env["INIT_CWD"]) process.chdir(process.env["INIT_CWD"]);
+loadEnvFiles([".env"]);
 
 const flagByName = new Map<string, DemoExperimentFlag>(EXPERIMENT_FLAGS.map((f) => [f.name, f]));
-const plan = planTraffic(seed, { scale });
+const spanHours = Number(values["span-hours"]);
+if (!Number.isFinite(spanHours) || spanHours <= 0) {
+  console.error("--span-hours must be a positive number.");
+  process.exit(1);
+}
+let plan = planTraffic(seed, { scale, spanMs: spanHours * 3_600_000 });
 
 function summarise(): void {
-  console.log(`Plan: ${plan.length} identities, seed ${seed}, scale ${scale}`);
+  console.log(`Plan: ${plan.length} identities, seed ${seed}, scale ${scale}, span ${spanHours}h`);
   for (const f of EXPERIMENT_FLAGS) {
     const mine = plan.filter((p) => p.flag === f.name);
     const oldest = Math.max(...mine.map((p) => p.exposureAgoMs));
     console.log(
       `  ${f.name.padEnd(16)} ${String(mine.length).padStart(5)} identities  ` +
         `control ${+(f.controlRate * 100).toFixed(1)}%  variant ${+(f.variantRate * 100).toFixed(1)}%  ` +
-        `variant exposure ${f.variantExposureRate * 100}%  oldest ${(oldest / 3_600_000).toFixed(1)}h ago`,
+        `variant exposure ${f.variantExposureRate * 100}%  oldest ${(oldest / 60_000).toFixed(1)} min ago`,
     );
   }
 }
@@ -97,7 +100,42 @@ function armOf(flag: { variant?: string | undefined; value: unknown }, f: DemoEx
   return (flag.variant ?? String(flag.value)) === f.variantKey;
 }
 
+/**
+ * Flagsmith only counts events inside an experiment's run (started_at onwards), so back-dated events must not
+ * predate the newest start. Reads the running experiments of this environment with the admin key and returns the
+ * latest started_at (epoch ms), or null when it cannot be read (the full span is used then).
+ */
+async function latestExperimentStart(): Promise<number | null> {
+  const adminKey = process.env["FLAGSMITH_API_KEY"];
+  const baseUrl = process.env["FLAGSMITH_API_URL"] || "https://api.flagsmith.com";
+  const envKey = envName === "staging" ? process.env["LANDER_ENV_STAGING"] : process.env["LANDER_ENV_PRODUCTION"];
+  if (!adminKey || !envKey) return null;
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/+$/, "")}/api/v1/environments/${envKey}/experiments/`, {
+      headers: { Authorization: `Api-Key ${adminKey}`, Accept: "application/json" },
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { results?: { name?: string; status?: string; started_at?: string | null }[] };
+    const names = new Set(EXPERIMENT_FLAGS.map((f) => `${f.name}_test`));
+    const starts = (body.results ?? [])
+      .filter((e) => e.status === "running" && e.name && names.has(e.name) && e.started_at)
+      .map((e) => Date.parse(e.started_at as string))
+      .filter((t) => Number.isFinite(t));
+    return starts.length > 0 ? Math.max(...starts) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function main(): Promise<void> {
+  const started = await latestExperimentStart();
+  const fullSpanMs = spanHours * 3_600_000;
+  // 5 s of margin for clock skew between this machine and the server; never less than 1 s of span.
+  if (started !== null && Date.now() - started - 5_000 < fullSpanMs) {
+    const clamped = Math.max(1_000, Date.now() - started - 5_000);
+    console.log(`Experiments started ${Math.round((Date.now() - started) / 1000)}s ago: events are placed inside that window (span ${(clamped / 1000).toFixed(0)} s).`);
+    plan = planTraffic(seed, { scale, spanMs: clamped });
+  }
   summarise();
   const events = new Flagsmith({
     environmentKey: serverKey!,

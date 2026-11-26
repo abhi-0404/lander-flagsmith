@@ -42,15 +42,39 @@ export function maskArgs(args: string[]): string[] {
 }
 
 /**
+ * Environment for the CLI child process. The CLI scopes credentials to a host: for a self-hosted URL it ignores
+ * FLAGSMITH_API_KEY and wants FLAGSMITH_API_KEY_<host> (non alphanumerics become "_", port included), for example
+ * http://localhost:8000 -> FLAGSMITH_API_KEY_localhost_8000 (verified on flagsmith v2.0.0, docs/cli-facts.md).
+ * Flagsmith Cloud (the default URL) keeps plain FLAGSMITH_API_KEY. Pure: takes the env, returns the extra variables.
+ */
+export function credentialEnv(env: Record<string, string | undefined>): Record<string, string> {
+  const url = env["FLAGSMITH_API_URL"];
+  const key = env["FLAGSMITH_API_KEY"];
+  if (!url || !key) return {};
+  let host: string;
+  try {
+    host = new URL(url).host;
+  } catch {
+    return {};
+  }
+  if (host === "api.flagsmith.com") return {};
+  return { [`FLAGSMITH_API_KEY_${host.replace(/[^A-Za-z0-9]/g, "_")}`]: key };
+}
+
+/**
  * Run the Flagsmith CLI with an argument array (execFile, never a shell string).
  * Optional stdin text. Resolves with stdout; rejects with stderr in the message.
  */
 export function runFlagsmith(args: string[], opts: { stdin?: string; bin?: string } = {}): Promise<string> {
   const bin = opts.bin ?? process.env["FLAGSMITH_BIN"] ?? "flagsmith";
   return new Promise((resolve, reject) => {
-    const child = execFile(bin, args, { maxBuffer: 16 * 1024 * 1024 }, (err, stdout, stderr) => {
+    const env = { ...process.env, ...credentialEnv(process.env) };
+    const child = execFile(bin, args, { maxBuffer: 16 * 1024 * 1024, env }, (err, stdout, stderr) => {
       if (err) {
-        reject(new Error(`flagsmith ${maskArgs(args).join(" ")} failed: ${stderr.trim() || err.message}`));
+        // On a non-2xx answer the CLI exits 1, prints the error line on stderr and the response BODY on stdout
+        // (verified on v2.0.0), so both go into the message: callers read "Expected available in N seconds." from it.
+        const detail = [stderr.trim(), stdout.trim()].filter(Boolean).join(" | ") || err.message;
+        reject(new Error(`flagsmith ${maskArgs(args).join(" ")} failed: ${detail}`));
       } else {
         resolve(stdout);
       }

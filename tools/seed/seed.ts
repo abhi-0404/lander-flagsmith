@@ -11,9 +11,10 @@
  * lifecycle spike (docs/cli-facts.md); the script prints the raw response when it
  * cannot find what it needs, so a mismatch is a one-line fix.
  */
-import { existsSync } from "node:fs";
 import { parseArgs } from "node:util";
+import { loadEnvFiles } from "../../src/envFiles.js";
 import { buildApiArgs, globalArgs, runFlagsmith, type HttpMethod } from "../../src/flagsmith/cli.js";
+import { resetDemo } from "./reset.js";
 import { EXPERIMENT_FLAGS, KILL_SWITCH, METRIC, parseEnvName, type EnvName } from "../demoFlags.js";
 
 const { values } = parseArgs({
@@ -28,7 +29,7 @@ const { values } = parseArgs({
 const dryRun = values["dry-run"] === true;
 const envName: EnvName = parseEnvName(values.env);
 
-if (existsSync(".env")) process.loadEnvFile(".env");
+loadEnvFiles([".env"]);
 
 const projectId = process.env["FLAGSMITH_PROJECT_ID"] || (dryRun ? "<PROJECT_ID>" : "");
 const envKey =
@@ -38,11 +39,6 @@ if (!projectId || !envKey) {
   console.error("Set FLAGSMITH_PROJECT_ID and LANDER_ENV_STAGING / LANDER_ENV_PRODUCTION in .env (see .env.example).");
   process.exit(1);
 }
-if (values.reset) {
-  console.error("--reset is not implemented yet (see tools/seed/reset.ts).");
-  process.exit(1);
-}
-
 type Json = any;
 
 /** Run a CLI call, or print it when --dry-run. Returns parsed JSON (null if empty or dry). */
@@ -149,12 +145,13 @@ async function createAndStartExperiment(
     feature: ids.featureId,
     name: `${f.name}_test`,
     hypothesis: f.hypothesis,
-    metrics: [{ metric: metricId, expected_direction: "increase" }],
+    // Verified on self-hosted 2.295.2: the metric id is sent as a string.
+    metrics: [{ metric: String(metricId), expected_direction: "increase" }],
     experiment_rollout: {
       enabled: true,
       rollout_percentage: 100,
-      // type/value shape UNVERIFIED (Phase 0 spike).
-      feature_state_value: { type: "unicode", value: f.controlValue },
+      // Verified: type is "string" ("unicode" is rejected with 400). Control is the feature's own value.
+      feature_state_value: { type: "string", value: f.controlValue },
       multivariate_feature_state_values: [
         { multivariate_feature_option: ids.variantId, percentage_allocation: f.variantWeight },
       ],
@@ -164,8 +161,29 @@ async function createAndStartExperiment(
   await api("POST", `${base}${experimentId}/start/`);
 }
 
+async function reset(): Promise<void> {
+  const other = envName === "staging" ? process.env["LANDER_ENV_PRODUCTION"] : process.env["LANDER_ENV_STAGING"];
+  if (dryRun) {
+    console.log(`[dry-run] would pause and delete the demo experiments and the metric in ${envName}, then delete the demo features not used by the other environment`);
+    return;
+  }
+  const summary = await resetDemo({
+    api: (method, path) => api(method, path),
+    deleteFeature: async (name) => {
+      if (!(await safeGet(["feature", "get", name]))) return false;
+      await call(cli(["feature", "delete", name, "--yes"]));
+      return true;
+    },
+    envKey,
+    ...(other ? { otherEnvironmentKey: other } : {}),
+    log: (l) => console.log(l),
+  });
+  console.log(`Reset ${envName}: ${summary.experimentsDeleted.length} experiments, ${summary.featuresDeleted.length} features removed, ${summary.featuresKept.length} kept.`);
+}
+
 async function main(): Promise<void> {
   console.log(`Seeding ${envName}${dryRun ? " (dry run)" : ""}`);
+  if (values.reset) await reset();
   await ensureWarehouse();
   const metricId = await ensureMetric();
   const ids = new Map<string, { featureId: number | string; variantId: number | string }>();

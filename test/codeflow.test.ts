@@ -332,11 +332,15 @@ describe.skipIf(!SHOP_PRESENT)("lander retire (gate checks, dry run)", () => {
   });
 });
 
+// Captured when this file loads, before any test runs: the project folder may be a real git checkout, and the tests
+// must neither create nor remove its .git.
+const realGitAtStart = existsSync(join(process.cwd(), ".git"));
+
 describe("never touches the real folders", () => {
   it("test helpers refuse a folder outside the OS temp dir", () => {
     expect(() => git(join(process.cwd()), "status")).toThrow(/throwaway/);
     expect(() => assertTemp(`${tmpdir()}2${sep}x`)).toThrow(/throwaway/);
     expect(() => assertTemp(tmpdir())).toThrow(/throwaway/);
-    expect(existsSync(join(process.cwd(), ".git"))).toBe(false);
+    expect(existsSync(join(process.cwd(), ".git"))).toBe(realGitAtStart);
   });
 });
