@@ -57,7 +57,8 @@ export const experimentSchema = z.looseObject({
   hypothesis: z.string().nullable().optional(),
   status: experimentStatusSchema,
   metrics: z.array(experimentMetricSchema).default([]),
-  experiment_rollout: experimentRolloutSchema.optional(),
+  /** Null once the experiment is completed (seen live on self-hosted 2.295.2). */
+  experiment_rollout: experimentRolloutSchema.nullable().optional(),
   created_at: z.string().optional(),
   started_at: z.string().nullable().optional(),
   ended_at: z.string().nullable().optional(),

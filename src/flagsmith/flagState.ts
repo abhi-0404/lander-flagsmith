@@ -63,6 +63,8 @@ export const flagGetArgs = (flag: string): string[] => ["flag", "get", assertFla
 /**
  * `flag update` arguments that put a flag back to `state`. `=` forms keep a value that starts with "-" from being read
  * as an option. Pure, so it is unit-testable. Throws when there is nothing to restore.
+ * `--yes`: without a terminal the CLI refuses `flag update` unless confirmed (seen live on v2.0.0). It is only called
+ * after Lander's own typed approval, so the CLI prompt would be a second, unanswerable confirmation.
  */
 export function flagRestoreArgs(flag: string, state: FlagState): string[] {
   if (isEmptyFlagState(state)) throw new Error("the recorded flag state has nothing Lander can restore (empty value, enabled and weights)");
@@ -76,6 +78,7 @@ export function flagRestoreArgs(flag: string, state: FlagState): string[] {
   for (const [id, pct] of Object.entries(state.weights ?? {}).sort(([a], [b]) => a.localeCompare(b))) {
     args.push(`--weight=${id}=${pct}`);
   }
+  args.push("--yes");
   return args;
 }
 

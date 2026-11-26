@@ -42,6 +42,16 @@ export function maskArgs(args: string[]): string[] {
 }
 
 /**
+ * CLI output for error messages: the environment key passed with -e is masked wherever it appears. The CLI echoes it
+ * in its own prompts, e.g. `Update x in environment staging (<key>)?` (seen live on v2.0.0).
+ */
+export function maskOutput(text: string, args: string[]): string {
+  const i = args.indexOf("-e");
+  const key = i >= 0 ? args[i + 1] : undefined;
+  return key ? text.split(key).join("{env}") : text;
+}
+
+/**
  * Environment for the CLI child process. The CLI scopes credentials to a host: for a self-hosted URL it ignores
  * FLAGSMITH_API_KEY and wants FLAGSMITH_API_KEY_<host> (non alphanumerics become "_", port included), for example
  * http://localhost:8000 -> FLAGSMITH_API_KEY_localhost_8000 (verified on flagsmith v2.0.0, docs/cli-facts.md).
@@ -78,7 +88,7 @@ export function runFlagsmith(args: string[], opts: { stdin?: string; bin?: strin
       if (err) {
         // On a non-2xx answer the CLI exits 1, prints the error line on stderr and the response BODY on stdout
         // (verified on v2.0.0), so both go into the message: callers read "Expected available in N seconds." from it.
-        const detail = [stderr.trim(), stdout.trim()].filter(Boolean).join(" | ") || err.message;
+        const detail = maskOutput([stderr.trim(), stdout.trim()].filter(Boolean).join(" | ") || err.message, args);
         reject(new Error(`flagsmith ${maskArgs(args).join(" ")} failed: ${detail}`));
       } else {
         resolve(stdout);

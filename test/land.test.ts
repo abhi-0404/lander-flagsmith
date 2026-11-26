@@ -437,6 +437,7 @@ describe("flag state helpers", () => {
       "--enable",
       "--weight=1=70",
       "--weight=2=30",
+      "--yes",
     ]);
     expect(() => flagRestoreArgs("x", { enabled: null, value: null, valueType: null, weights: null })).toThrow(/nothing Lander can restore/);
     expect(() => flagRestoreArgs("--yes", { enabled: true, value: null, valueType: null, weights: null })).toThrow(/Unsafe flag key/);

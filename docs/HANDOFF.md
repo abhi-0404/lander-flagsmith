@@ -211,3 +211,23 @@ Fixed (tests in `test/codemod.test.ts` and `test/codeflow.test.ts`):
 
 Still open: brace matching does not understand regex literals (a `/\{/` in a component can mis-parse; tests and the human diff are the net);
 CLI `apply` takes the repo path from the current `.env`, not the plan (file hashes still bind the edits).
+
+## Live end-to-end run against the local Track 3 stack (2026-11-26)
+
+Self-hosted Flagsmith 2.295.2 from `../flagscope/stack`, keys in `.env.local-stack` (git-ignored), run with
+`LANDER_ENV_FILE=.env.local-stack` (absolute path for `pnpm simulate`, which runs in `tools/simulator`).
+
+- `pnpm simulate --env staging --seed 4242 --scale 3`: 8131 exposures. `scan`: checkout_cta SHIP (100%, +46.3%), pricing_banner SHIP
+  (98.8%), signup_steps DO NOT TRUST (99.0% chance to win, refused for SRM 63.2/36.8, p = 7.3e-39). `land signup_steps --dry-run` exits 2.
+- `land checkout_cta --no-code` saved plan c01eecffcb7a; `apply` (typed approval in a real terminal) completed experiment 11 and Flagsmith
+  rolled out get-everyones-times (weight 13 = 100, experiment segment override removed). `rollback` restored weight 13 = 0, value copy-invite.
+  `journal verify`: 8 entries, chain intact; the environment key appears nowhere in the journal.
+- Four bugs found live and fixed, each with a regression test:
+  1. results `inference: { "<arm>": null }` crashed `scan` (now `{}`, arm stays a variant). Commit 163a97e.
+  2. `flag get` / `flag update` failed with "no project": FLAGSMITH_PROJECT_ID is now passed as FLAGSMITH_PROJECT. Commit 25bd014.
+  3. Completed experiment detail has `experiment_rollout: null`: the post-apply read-back failed after the write (journaled as
+     `apply_failed`, stage readback, written true). Schema now nullable.
+  4. `flag update` needs `--yes` without a terminal (added after Lander's own typed approval), and the CLI echoed the environment key in
+     its prompt text: CLI error output is now masked (`maskOutput`).
+- Note: the hash prefix for `rollback` is the apply journal id (9a6c980b here), not the plan id. Worth a clearer prompt in the demo.
+- Experiment 11 on the local stack is now completed; `pnpm seed --reset --env staging` then `pnpm seed --env staging` recreates it.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { credentialEnv } from "../src/flagsmith/cli.js";
+import { credentialEnv, maskOutput } from "../src/flagsmith/cli.js";
 
 describe("credentialEnv (environment for the flagsmith CLI child process)", () => {
   it("passes FLAGSMITH_PROJECT_ID as FLAGSMITH_PROJECT so flag get/update know the project", () => {
@@ -18,5 +18,15 @@ describe("credentialEnv (environment for the flagsmith CLI child process)", () =
     expect(credentialEnv({ FLAGSMITH_API_URL: "not a url", FLAGSMITH_API_KEY: "k", FLAGSMITH_PROJECT_ID: "2" })).toEqual({
       FLAGSMITH_PROJECT: "2",
     });
+  });
+});
+
+describe("maskOutput (CLI error text)", () => {
+  it("masks the -e environment key wherever the CLI echoes it", () => {
+    const args = ["flag", "update", "x", "--yes", "-e", "TVqKEY123"];
+    expect(maskOutput('pass --yes to confirm "Update x in environment staging (TVqKEY123)?"', args)).toBe(
+      'pass --yes to confirm "Update x in environment staging ({env})?"',
+    );
+    expect(maskOutput("no key here", ["api", "path"])).toBe("no key here");
   });
 });

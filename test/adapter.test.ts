@@ -245,3 +245,11 @@ describe("results with a null inference (seen live on self-hosted 2.295.2)", () 
     expect("control" in m.inference).toBe(false);
   });
 });
+
+describe("completed experiment detail (seen live on self-hosted 2.295.2)", () => {
+  it("accepts experiment_rollout: null, which Flagsmith returns once an experiment is completed", () => {
+    const exp = readJson("real", "experiments-detail-running-with-data.json") as Record<string, unknown>;
+    const parsed = experimentSchema.parse({ ...exp, status: "completed", experiment_rollout: null });
+    expect(parsed.experiment_rollout).toBeNull();
+  });
+});
