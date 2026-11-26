@@ -168,6 +168,7 @@ export async function runRollback(
   }
   const approval = await approve({ environment: { name: target.environment.name, protected: target.environment.protected } }, target.started.hash, ctx.io, {
     action: "rollback",
+    codeSource: `from the journal record of the apply being undone (${target.started.id}), not the plan id`,
     now: ctx.clock.now,
   });
   const result = await executeRollback(target, approval, { port: ctx.port, journal: ctx.journal, envKey: ctx.resolveKey(target.environment.name) });

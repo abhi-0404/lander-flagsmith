@@ -128,6 +128,23 @@ describe("approval gate (S4)", () => {
     await expect(approve(plan, hash, ttyIO([""]))).rejects.toBeInstanceOf(ApprovalRefused);
   });
 
+  it("names the approval code, says where it comes from, and that anything else cancels", async () => {
+    const io = ttyIO(["aaaaaaaa"]);
+    await approve(plan, hash, io, { action: "rollback", codeSource: "from the journal record of the apply being undone (x1), not the plan id" });
+    expect(io.asked[0]).toContain("Approval code for this rollback: aaaaaaaa (from the journal record of the apply being undone (x1), not the plan id)");
+    expect(io.asked[0]).toContain("Type aaaaaaaa and press Enter to approve, or anything else to cancel");
+    const landing = ttyIO(["aaaaaaaa"]);
+    await approve(plan, hash, landing);
+    expect(landing.asked[0]).toContain("the plan hash above");
+  });
+
+  it("on a wrong answer shows what was typed, the right code, and that nothing was written", async () => {
+    await expect(approve(plan, hash, ttyIO(["get-everyones-times"]), { action: "rollback" })).rejects.toThrow(
+      'Not approved: you typed "get-everyones-times", the approval code is aaaaaaaa. Nothing was written.',
+    );
+    await expect(approve(plan, hash, ttyIO(["\u001b[31mred"]))).rejects.toThrow('you typed "[31mred"');
+  });
+
   it("accepts the right prefix", async () => {
     const a = await approve(plan, hash, ttyIO(["aaaaaaaa"]), { user: () => "me", now: () => 0 });
     expect(a).toMatchObject({ planHash: hash, environment: "staging", user: "me", typed: { hashPrefix: "aaaaaaaa" } });

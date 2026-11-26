@@ -41,6 +41,8 @@ export function defaultApprovalIO(): ApprovalIO {
 export interface ApproveOptions {
   /** Short label of what is being approved, e.g. "landing" or "rollback". */
   action?: string;
+  /** Where the approval code comes from, shown in the prompt. Default: the plan hash. */
+  codeSource?: string;
   now?: () => number;
   user?: () => string;
 }
@@ -62,8 +64,17 @@ export async function approve(
     );
   }
   const expectedHash = approvalPrefix(hash);
-  const typedHash = (await io.ask(`Type the hash prefix (${expectedHash}) to approve ${action}: `)).trim().toLowerCase();
-  if (typedHash !== expectedHash) throw new ApprovalRefused("The typed hash prefix does not match. Not approved.");
+  const source = opts.codeSource ?? "the first 8 characters of the plan hash above";
+  const typedHash = (
+    await io.ask(`Approval code for this ${action}: ${expectedHash} (${source}).\nType ${expectedHash} and press Enter to approve, or anything else to cancel: `)
+  )
+    .trim()
+    .toLowerCase();
+  if (typedHash !== expectedHash) {
+    // Echo what was typed (control characters stripped, length capped) so a slip is obvious.
+    const shown = typedHash.replace(/[\u0000-\u001f\u007f-\u009f]/g, "").slice(0, 40);
+    throw new ApprovalRefused(`Not approved: you typed "${shown}", the approval code is ${expectedHash}. Nothing was written.`);
+  }
 
   let typedEnv: string | undefined;
   if (plan.environment.protected) {
